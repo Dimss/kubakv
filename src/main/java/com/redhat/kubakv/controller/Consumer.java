@@ -48,7 +48,7 @@ public class Consumer {
 
     @GetMapping("/square/{color}")
     public ResponseEntity sendSquare(@PathVariable String color) {
-        String producerUrl = String.format("http://%s/v1/autosquare/topic/t10/color/%s", producerService, color);
+        String producerUrl = String.format("%s/v1/autosquare/topic/t10/color/%s", producerService, color);
         OkHttpClient client = new OkHttpClient();
         Request r = new Request.Builder().url(producerUrl).build();
         try {
