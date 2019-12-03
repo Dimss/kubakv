@@ -5,9 +5,9 @@ import com.redhat.kubakc.model.Metadata;
 import com.redhat.kubakv.repository.MetadataRepository;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,9 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 public class Consumer {
+
+    @Value("${app.producer.url}")
+    private String producerService;
 
     @Autowired
     GenericResponse genericResponse;
@@ -40,6 +44,24 @@ public class Consumer {
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(genericResponse.getJsonPayload());
+    }
+
+    @GetMapping("/square/{color}")
+    public ResponseEntity sendSquare(@PathVariable String color) {
+        String producerUrl = String.format("http://%s/v1/autosquare/topic/t10/color/%s", producerService, color);
+        OkHttpClient client = new OkHttpClient();
+        Request r = new Request.Builder().url(producerUrl).build();
+        try {
+            Response response = client.newCall(r).execute();
+            String res = response.body().string();
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(res);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping("/consumer/{id}")

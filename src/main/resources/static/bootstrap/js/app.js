@@ -1,13 +1,41 @@
 $( document ).ready(function() {
 
 
+    $("#red-square").on("click", function () {
+
+        $.ajax({
+            url: "/square/red",
+            success: function(result){
+                console.log(result);
+            }
+        });
+    });
+
+    $("#green-square").on("click", function () {
+        $.ajax({
+            url: "/square/green",
+            success: function(result){
+                console.log(result);
+            }
+        });
+    });
+
+    $("#blue-square").on("click", function () {
+        $.ajax({
+            url: "/square/blue",
+            success: function(result){
+                console.log(result);
+            }
+        });
+    });
+
     setInterval(()=>{
         $.ajax({
             url: "/consumer",
             success: function(result){
                 $("#kafka-image-container").empty();
                 result.data.map((e, idx) =>{
-                    let template = getViewTemplate()
+                    let template = getViewTemplate();
                     template = template.replace(/consumer-name/g, e.id)
                     $("#kafka-image-container").append(template)
                     $("#"+e.id+"-img").attr("src", "data:image/png;base64, "+ e.kafkaStateImage);
